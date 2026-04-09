@@ -14,3 +14,26 @@ Notes:
 - Portainer data is not stored in Git
 - Home Assistant DB/runtime state is not stored in Git
 - Mosquitto passwords are not stored in Git
+
+## Docker network recreation
+
+Caddy expects an external Docker network named `proxy`.
+
+Create it before starting Caddy if it does not already exist:
+bash
+docker network create proxy
+Check existing networks:
+bash
+docker network ls
+## Suggested service restore order
+
+1. AdGuard Home
+2. Mosquitto
+3. Home Assistant
+4. Caddy
+5. Portainer
+
+## Notes on Portainer
+
+Portainer is intentionally not fully backed up in Git.
+Recreate it from compose/runtime instructions, then reconnect it to the Docker socket and reapply settings manually if needed.
