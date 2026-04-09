@@ -1,0 +1,14 @@
+dk.blackridge.shumie.net {
+    tls internal
+    reverse_proxy portainer:9000
+}
+
+ha.blackridge.shumie.net {
+    tls internal
+    reverse_proxy host.docker.internal:8123
+}
+
+dns.blackridge.shumie.net {
+    tls internal
+    reverse_proxy 192.168.3.10:3000
+}
