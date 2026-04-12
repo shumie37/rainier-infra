@@ -1,8 +1,15 @@
 services:
   caddy:
-    image: caddy:2
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: caddy
     restart: unless-stopped
+    env_file:
+      - .env.route53
+    dns:
+      - 1.1.1.1
+      - 9.9.9.9
     ports:
       - "80:80"
       - "443:443"

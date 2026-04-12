@@ -1,5 +1,9 @@
 # Restore notes
 
+See also:
+
+- `docs/BACKUP.md` for the recovery baseline and what must exist before restore
+
 High level restore plan:
 1. Rebuild host OS and Docker
 2. Clone this repository
@@ -11,9 +15,10 @@ High level restore plan:
 8. Validate DNS, HTTPS, Home Assistant, and MQTT
 Notes:
 - Caddy runtime cert/account data is not stored in Git
-- Portainer data is not stored in Git
+- Caddy now expects a Route 53-capable custom image and local-only AWS credential env file when restoring Let's Encrypt for `dns.blackridge.shumie.net`
 - Home Assistant DB/runtime state is not stored in Git
 - Mosquitto passwords are not stored in Git
+- the recovery-critical backup baseline is AdGuard, Caddy, Home Assistant, and Mosquitto
 
 ## Docker network recreation
 
@@ -31,9 +36,3 @@ docker network ls
 2. Mosquitto
 3. Home Assistant
 4. Caddy
-5. Portainer
-
-## Notes on Portainer
-
-Portainer is intentionally not fully backed up in Git.
-Recreate it from compose/runtime instructions, then reconnect it to the Docker socket and reapply settings manually if needed.
