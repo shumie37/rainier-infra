@@ -83,6 +83,8 @@ Portainer note:
 
 - `ufw` status: active
 - Base LAN allows are in place for SSH, DNS, HTTP, HTTPS, Home Assistant, and MQTT
+- Teleport VPN clients arrive from `192.168.2.0/24`
+- DNS and SSH over Teleport depend on explicit `ufw` allows from `192.168.2.0/24` to `53/tcp`, `53/udp`, and `22/tcp`
 - Additional Docker-aware allows are required for current operation:
   - `172.18.0.0/16 -> 3000/tcp` for Caddy to reach AdGuard
   - `172.18.0.0/16 -> 8123/tcp` for Caddy to reach Home Assistant
