@@ -31,7 +31,7 @@ luna-admin.blackridge.shumie.net {
     tls internal
 
     basicauth {
-        lane $2a$14$V8JW8BwHaSkkhWz2oP2DreX8FtHqHN/19aWizSt77LTzndOKUvarW
+        lane $2a$14$Ini7uVLM4HSKebp0VF7zH.mVgKYJl/JazCFKi5daoDnQmhzi2DWfW
     }
 
     reverse_proxy http://192.168.3.11:18810 {
