@@ -26,3 +26,20 @@ nas.blackridge.shumie.net {
         }
     }
 }
+
+luna-admin.blackridge.shumie.net {
+    tls internal
+
+    basicauth {
+        lane $2a$14$V8JW8BwHaSkkhWz2oP2DreX8FtHqHN/19aWizSt77LTzndOKUvarW
+    }
+
+    reverse_proxy http://192.168.3.11:18810 {
+        header_up X-Command-Center-App-Auth {$LUNA_APP_AUTH_TOKEN}
+        header_up X-Forwarded-User {http.auth.user.id}
+        header_up X-Forwarded-Role admin
+        header_up X-Forwarded-Proto https
+        header_up X-Forwarded-Host {host}
+        header_up X-Forwarded-For {remote_host}
+    }
+}
