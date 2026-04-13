@@ -27,6 +27,7 @@ Recommended posture:
 - LAN subnet: `192.168.3.0/24`
 - Gateway: `192.168.3.1`
 - Host: `192.168.3.10`
+- Teleport VPN subnet: `192.168.2.0/24`
 
 ## Recommended allowlist
 
@@ -35,6 +36,7 @@ Recommended posture:
 Allow:
 
 - `22/tcp` from `192.168.3.0/24`
+- `22/tcp` from `192.168.2.0/24` (Teleport)
 
 Reason:
 
@@ -46,6 +48,8 @@ Allow:
 
 - `53/tcp` from `192.168.3.0/24`
 - `53/udp` from `192.168.3.0/24`
+- `53/tcp` from `192.168.2.0/24` (Teleport)
+- `53/udp` from `192.168.2.0/24` (Teleport)
 
 Reason:
 
@@ -117,8 +121,11 @@ sudo ufw default deny incoming
 sudo ufw default allow outgoing
 
 sudo ufw allow from 192.168.3.0/24 to any port 22 proto tcp comment 'ssh-lan'
+sudo ufw allow from 192.168.2.0/24 to any port 22 proto tcp comment 'ssh-teleport'
 sudo ufw allow from 192.168.3.0/24 to any port 53 proto tcp comment 'dns-tcp-lan'
 sudo ufw allow from 192.168.3.0/24 to any port 53 proto udp comment 'dns-udp-lan'
+sudo ufw allow from 192.168.2.0/24 to any port 53 proto tcp comment 'dns-teleport-tcp'
+sudo ufw allow from 192.168.2.0/24 to any port 53 proto udp comment 'dns-teleport-udp'
 sudo ufw allow from 192.168.3.0/24 to any port 80 proto tcp comment 'http-lan'
 sudo ufw allow from 192.168.3.0/24 to any port 443 proto tcp comment 'https-lan'
 sudo ufw allow from 192.168.3.0/24 to any port 8123 proto tcp comment 'homeassistant-lan'
