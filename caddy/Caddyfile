@@ -28,7 +28,12 @@ nas.blackridge.shumie.net {
 }
 
 luna-admin.blackridge.shumie.net {
-    tls internal
+    tls {
+        dns route53 {
+            hosted_zone_id {$ROUTE53_HOSTED_ZONE_ID}
+        }
+        resolvers 1.1.1.1 9.9.9.9
+    }
 
     basicauth {
         lane $2a$14$Ini7uVLM4HSKebp0VF7zH.mVgKYJl/JazCFKi5daoDnQmhzi2DWfW
