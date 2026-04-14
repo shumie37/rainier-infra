@@ -74,6 +74,50 @@ The Route 53 plugin needs permission to:
 
 Scope it to the specific hosted zone where possible.
 
+### Current observed access on `rainier` (2026-04-14)
+
+Observed working operations against hosted zone `Z1XIAIXXJ9KA3O`:
+
+- `route53:ListResourceRecordSets`
+- `route53:ChangeResourceRecordSets`
+- `route53:GetChange`
+
+Observed behavior:
+
+- listing `_acme-challenge.*` TXT records succeeded
+- deleting stale `_acme-challenge.*` TXT records succeeded when the exact RDATA matched
+- Caddy DNS-01 issuance succeeded for `nas.blackridge.shumie.net` and `luna-admin.blackridge.shumie.net`
+
+This is the least-privilege policy shape that matches observed requirements:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "Route53TxtChangesForShumieNetZone",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListResourceRecordSets",
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": "arn:aws:route53:::hostedzone/Z1XIAIXXJ9KA3O"
+    },
+    {
+      "Sid": "Route53GetChangeStatus",
+      "Effect": "Allow",
+      "Action": "route53:GetChange",
+      "Resource": "arn:aws:route53:::change/*"
+    }
+  ]
+}
+```
+
+Notes:
+
+- if `hosted_zone_id` is set in Caddy, `route53:ListHostedZonesByName` is not required
+- keep this policy attached to a dedicated IAM principal used only for ACME DNS-01 automation
+
 ## Required hosted zone facts
 
 Need to know:
