@@ -7,7 +7,7 @@ This document defines the backup and recovery baseline for the recovery-critical
 Core services:
 
 - AdGuard Home
-- Caddy
+- nginx reverse proxy
 - Home Assistant
 - Mosquitto
 
@@ -30,7 +30,7 @@ Source of truth:
 Tracked config includes:
 
 - compose definitions
-- Caddyfile
+- nginx reverse-proxy config
 - Home Assistant YAML config slices
 - Mosquitto broker config
 - durable operational docs
@@ -44,7 +44,7 @@ Known secret-bearing paths:
 - `/home/shumie/adguard/conf/AdGuardHome.yaml`
 - `/home/shumie/homeassistant/config/secrets.yaml`
 - `/home/shumie/mosquitto/config/passwords`
-- Caddy runtime volume contents used for TLS/account material
+- `compose/nginx-proxy/.env.nginx-proxy`
 - SSH keys stored in 1Password
 
 ### Stateful runtime data
@@ -53,8 +53,7 @@ These paths require backup outside Git:
 
 - `/home/shumie/adguard/work`
 - `/home/shumie/adguard/conf/AdGuardHome.yaml`
-- Docker volume `caddy_caddy_data`
-- Docker volume `caddy_caddy_config`
+- Docker volume `nginx-proxy_letsencrypt`
 - `/home/shumie/homeassistant/config`
 - `/home/shumie/mosquitto/data`
 - `/home/shumie/mosquitto/log` if log retention matters
@@ -77,21 +76,22 @@ Recovery note:
 
 - DNS records, rewrites, auth material, and service settings depend on `AdGuardHome.yaml`
 
-### Caddy
+### nginx reverse proxy
 
 Required for recovery:
 
-- Docker volume `caddy_caddy_data`
-- Docker volume `caddy_caddy_config`
+- Docker volume `nginx-proxy_letsencrypt`
+- local-only env file `compose/nginx-proxy/.env.nginx-proxy`
 
 Tracked separately in Git:
 
-- `/home/shumie/projects/rainier-infra/compose/caddy/compose.yaml`
-- `/home/shumie/projects/rainier-infra/caddy/Caddyfile`
+- `/home/shumie/projects/rainier-infra/compose/nginx-proxy/compose.yaml`
+- `/home/shumie/projects/rainier-infra/compose/nginx-proxy/nginx/nginx.conf`
+- `/home/shumie/projects/rainier-infra/compose/nginx-proxy/nginx/templates/blackridge.conf.template`
 
 Recovery note:
 
-- certificate/account state is not in Git and must be backed up from Docker-managed runtime state
+- certificate and account state is not fully in Git and should be backed up from the Let's Encrypt volume and restored AWS credentials
 
 ### Home Assistant
 
@@ -150,8 +150,7 @@ Back up:
 
 - `/home/shumie/adguard/conf/AdGuardHome.yaml`
 - `/home/shumie/adguard/work`
-- Docker volume `caddy_caddy_data`
-- Docker volume `caddy_caddy_config`
+- Docker volume `nginx-proxy_letsencrypt`
 - `/home/shumie/homeassistant/config`
 - `/home/shumie/mosquitto/data`
 - `/home/shumie/mosquitto/config/passwords`
@@ -171,20 +170,6 @@ Record durably:
 - restore order
 - secret sources
 
-## Retention recommendation
-
-Minimum:
-
-- daily local backup
-- daily or weekly off-host replication
-- retain multiple historical recovery points
-
-Suggested bias:
-
-- short retention for logs
-- longer retention for Home Assistant and AdGuard state
-- retain at least one known-good monthly recovery point off-host
-
 ## Restore dependency order
 
 1. Restore secrets and state before starting services that require them.
@@ -192,23 +177,6 @@ Suggested bias:
 3. Restore AdGuard state.
 4. Restore Mosquitto state.
 5. Restore Home Assistant state.
-6. Restore Caddy runtime volumes.
+6. Restore nginx certificate state and local-only env.
 7. Start services in dependency-aware order.
 8. Validate DNS, HTTPS, Home Assistant, and MQTT.
-
-## Backup design gaps
-
-Current gaps observed on `2026-04-11`:
-
-- no verified backup target
-- no verified backup schedule
-- no verified restore test
-- no documented capture method for Docker volumes
-- mixed ownership on live paths complicates least-authority backup workflows
-
-## Next implementation steps
-
-1. Choose the backup destination and off-host replication target.
-2. Decide which service state should be captured by file-level backup versus image or snapshot backup.
-3. Add a repeatable backup script or job for the recovery-critical paths and volumes.
-4. Add a restore verification checklist after the first successful backup run.

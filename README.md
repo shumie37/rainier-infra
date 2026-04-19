@@ -1,6 +1,6 @@
 # rainier-infra
 
-Clean Git-tracked infrastructure for rainier.blackridge.shumie.net.
+Clean Git-tracked infrastructure for `rainier.blackridge.shumie.net`.
 
 Purpose:
 - preserve disaster recovery configuration
@@ -10,14 +10,16 @@ Purpose:
 
 Services currently covered:
 - AdGuard Home
-- Caddy
+- nginx reverse proxy
+- FreeRADIUS (planned)
 - Home Assistant
 - Mosquitto
+- Step CA (planned)
 
 Not currently tracked:
 - Docker runtime state
-- Caddy runtime volumes
 - AWS credential env files
+- nginx local-only env files
 - Home Assistant secrets/databases/runtime cache
 - Mosquitto passwords
 
@@ -28,5 +30,7 @@ Key docs:
 - `MEMORY.md`
 - `docs/BACKUP.md`
 - `docs/FIREWALL.md`
-- `docs/LETSENCRYPT-ROUTE53.md`
+- `docs/NGINX-CUTOVER.md`
+- `docs/RADIUS-WPA3-EAP-TLS.md`
+- `docs/UNIFI-WPA3-EAP-TLS-ROLLOUT.md`
 - `docs/RESTORE.md`

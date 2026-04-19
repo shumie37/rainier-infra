@@ -1,0 +1,21 @@
+services:
+  step-ca:
+    image: smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270
+    container_name: step-ca
+    restart: unless-stopped
+    init: true
+    ports:
+      - "9000:9000"
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - wget -qO- --no-check-certificate https://127.0.0.1:9000/health | grep '"status":"ok"' >/dev/null
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    volumes:
+      - ./certs:/home/step/certs
+      - ./config:/home/step/config
+      - ./db:/home/step/db
+      - ./secrets:/home/step/secrets:ro

@@ -5,8 +5,6 @@ REPO="${HOME}/projects/rainier-infra"
 
 echo "Syncing approved files from live paths into repo..."
 cp /home/shumie/adguard/docker-compose.yml "${REPO}/compose/adguard/docker-compose.yml"
-cp /home/shumie/caddy/compose.yaml "${REPO}/compose/caddy/compose.yaml"
-cp /home/shumie/caddy/Caddyfile "${REPO}/caddy/Caddyfile"
 cp /home/shumie/homeassistant/docker-compose.yml "${REPO}/compose/homeassistant/docker-compose.yml"
 cp /home/shumie/mosquitto/config/mosquitto.conf "${REPO}/mosquitto/config/mosquitto.conf"
 cp /home/shumie/homeassistant/config/configuration.yaml "${REPO}/homeassistant/configuration.yaml"

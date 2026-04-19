@@ -1,0 +1,14 @@
+services:
+  freeradius:
+    image: freeradius/freeradius-server@sha256:af6fd34a5b7826b6245008732f43fbc0432eb23d23e5de7106371b2941e70a4b
+    container_name: freeradius
+    restart: unless-stopped
+    network_mode: host
+    env_file:
+      - .env.radius
+    volumes:
+      - ./raddb:/etc/freeradius:ro
+      - ./certs:/etc/freeradius/certs:ro
+    command:
+      - -f
+      - -lstdout

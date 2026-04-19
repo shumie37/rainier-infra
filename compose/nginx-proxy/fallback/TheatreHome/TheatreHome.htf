@@ -1,0 +1,8 @@
+<div id="printer-home-fallback" style="padding: 24px; font-family: Arial, Helvetica, sans-serif;">
+  <h1 style="margin: 0 0 12px 0; font-size: 20px;">Printer home</h1>
+  <p style="margin: 0 0 12px 0;">The printer UI bundle is incomplete on this device, so nginx is serving a minimal landing page instead of a broken home shell.</p>
+  <ul style="margin: 0; padding-left: 20px;">
+    <li><a href="/IntfName">Interface name</a></li>
+    <li><a href="/Prefetch?type=dtree">Prefetch tree</a></li>
+  </ul>
+</div>

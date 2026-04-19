@@ -4,8 +4,6 @@
 
 This document defines the current and recommended host firewall policy for `rainier`.
 
-The base LAN-only policy has now been applied.
-
 ## Current state
 
 - `ufw` is active
@@ -20,14 +18,7 @@ Recommended posture:
 - default allow outbound
 - allow only explicitly required ports
 - keep admin and service-specific management ports LAN-only
-- expose WAN-facing traffic only when intentionally published through the UCG
-
-## Assumed network scope
-
-- LAN subnet: `192.168.3.0/24`
-- Gateway: `192.168.3.1`
-- Host: `192.168.3.10`
-- Teleport VPN subnet: `192.168.2.0/24`
+- expose WAN-facing traffic only when intentionally published through the gateway
 
 ## Recommended allowlist
 
@@ -35,21 +26,13 @@ Recommended posture:
 
 Allow:
 
-- `22/tcp` from `192.168.3.0/24`
-- `22/tcp` from `192.168.2.0/24` (Teleport)
-
-Reason:
-
-- remote administration from trusted LAN
+- `22/tcp` from trusted admin networks
 
 ### DNS
 
 Allow:
 
-- `53/tcp` from `192.168.3.0/24`
-- `53/udp` from `192.168.3.0/24`
-- `53/tcp` from `192.168.2.0/24` (Teleport)
-- `53/udp` from `192.168.2.0/24` (Teleport)
+- `53/tcp` and `53/udp` from trusted client networks
 
 Reason:
 
@@ -59,8 +42,7 @@ Reason:
 
 Allow:
 
-- `80/tcp` from `192.168.3.0/24`
-- `443/tcp` from `192.168.3.0/24`
+- `80/tcp` and `443/tcp` from trusted client networks
 
 Optional, only if WAN publishing is intentional:
 
@@ -69,27 +51,31 @@ Optional, only if WAN publishing is intentional:
 
 Reason:
 
-- Caddy reverse proxy ingress
+- nginx reverse proxy ingress
 
 ### Home Assistant
 
 Allow:
 
-- `8123/tcp` from `192.168.3.0/24`
-
-Reason:
-
-- direct LAN access only
+- `8123/tcp` from trusted LAN clients if direct access is still needed
 
 ### MQTT
 
 Allow:
 
-- `1883/tcp` from `192.168.3.0/24`
+- `1883/tcp` from trusted LAN clients
 
-Reason:
+### RADIUS
 
-- Home Assistant and trusted LAN clients
+Allow:
+
+- `1812/udp` and `1813/udp` from trusted UniFi infrastructure
+
+### Step CA
+
+Allow:
+
+- `9000/tcp` from trusted admin clients only if remote CA administration is needed
 
 ## Recommended deny-by-omission
 
@@ -98,84 +84,15 @@ Do not allow broadly unless a specific use case is documented:
 - `3000/tcp` AdGuard web UI
 - `21064/tcp`
 - `18555/tcp`
-
-These should remain blocked by the default deny policy unless intentionally opened to a narrow source range.
+- `9000/tcp`
 
 ## Live Docker-aware exceptions
 
 The following additional allows are currently required for correct host operation:
 
-- `172.18.0.0/16 -> 3000/tcp` for Caddy to reach AdGuard on the host
-- `172.18.0.0/16 -> 8123/tcp` for Caddy to reach Home Assistant on the host
+- `172.18.0.0/16 -> 3000/tcp` for nginx to reach AdGuard on the host
+- `172.18.0.0/16 -> 8123/tcp` for nginx to reach Home Assistant on the host
 - `172.17.0.0/16 -> 53/tcp` for Docker build containers to resolve DNS through AdGuard
 - `172.17.0.0/16 -> 53/udp` for Docker build containers to resolve DNS through AdGuard
 
 These are local container-network exceptions, not LAN exposure rules.
-
-## Base command set applied
-
-### LAN-only baseline
-
-```bash
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-
-sudo ufw allow from 192.168.3.0/24 to any port 22 proto tcp comment 'ssh-lan'
-sudo ufw allow from 192.168.2.0/24 to any port 22 proto tcp comment 'ssh-teleport'
-sudo ufw allow from 192.168.3.0/24 to any port 53 proto tcp comment 'dns-tcp-lan'
-sudo ufw allow from 192.168.3.0/24 to any port 53 proto udp comment 'dns-udp-lan'
-sudo ufw allow from 192.168.2.0/24 to any port 53 proto tcp comment 'dns-teleport-tcp'
-sudo ufw allow from 192.168.2.0/24 to any port 53 proto udp comment 'dns-teleport-udp'
-sudo ufw allow from 192.168.3.0/24 to any port 80 proto tcp comment 'http-lan'
-sudo ufw allow from 192.168.3.0/24 to any port 443 proto tcp comment 'https-lan'
-sudo ufw allow from 192.168.3.0/24 to any port 8123 proto tcp comment 'homeassistant-lan'
-sudo ufw allow from 192.168.3.0/24 to any port 1883 proto tcp comment 'mqtt-lan'
-```
-
-### Optional WAN ingress for reverse proxy only
-
-Only if intentionally published through the gateway:
-
-```bash
-sudo ufw allow 80/tcp comment 'http-wan'
-sudo ufw allow 443/tcp comment 'https-wan'
-```
-
-### Verification before enable
-
-```bash
-sudo ufw status numbered
-sudo ss -tulpn
-```
-
-## Post-enable checks
-
-Test from another trusted LAN client:
-
-- SSH to `rainier`
-- DNS queries to `192.168.3.10`
-- access to `http://dns.blackridge.shumie.net` or the AdGuard DNS role as intended
-- access to `https://ha.blackridge.shumie.net`
-- direct Home Assistant on `192.168.3.10:8123` if still needed
-- MQTT client connectivity on `192.168.3.10:1883`
-
-Confirm these are blocked unless later justified:
-
-- `192.168.3.10:3000`
-- `192.168.3.10:21064`
-- `192.168.3.10:18555`
-
-## Open questions
-
-- Is WAN forwarding enabled on the UCG for `80/tcp` and `443/tcp`?
-- Does any legitimate workflow require direct LAN access to AdGuard UI on `3000/tcp`?
-- What are `21064/tcp` and `18555/tcp`, and should they remain reachable?
-
-## Recommendation
-
-Best immediate target:
-
-- keep the LAN-only deny-by-default `ufw` policy
-- open WAN `80/443` only if the gateway is intentionally forwarding them
-- keep admin and convenience ports blocked by default
-- keep Docker bridge allowances as narrow and well-documented as possible

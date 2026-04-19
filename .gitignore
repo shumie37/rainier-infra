@@ -33,3 +33,4 @@ mosquitto/config/passwords
 adguard/work/
 portainer/
 adguard/conf/AdGuardHome.yaml
+compose/nginx-proxy/auth/*.htpasswd
