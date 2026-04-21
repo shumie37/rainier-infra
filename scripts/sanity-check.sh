@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO="${HOME}/projects/rainier-infra"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+REPO="$(cd -- "${SCRIPT_DIR}/.." && pwd)"
 
 echo "Checking tracked files exist..."
 test -f "${REPO}/compose/adguard/docker-compose.yml"
