@@ -18,10 +18,12 @@ def build_profile(
     radius_host: str,
     profile_display_name: str,
     root_ca_bytes: bytes,
+    intermediate_ca_bytes: bytes | None,
     pkcs12_bytes: bytes,
     pkcs12_password: str,
 ):
     root_uuid = payload_uuid()
+    intermediate_uuid = payload_uuid()
     identity_uuid = payload_uuid()
     wifi_uuid = payload_uuid()
     profile_uuid = payload_uuid()
@@ -35,6 +37,20 @@ def build_profile(
         "PayloadDescription": "Trust anchor for Blackridge Wi-Fi certificates.",
         "PayloadContent": root_ca_bytes,
     }
+
+    payloads = [root_payload]
+
+    if intermediate_ca_bytes is not None:
+        intermediate_payload = {
+            "PayloadType": "com.apple.security.pkcs1",
+            "PayloadVersion": 1,
+            "PayloadIdentifier": f"net.shumie.blackridge.intermediate.{device_name}",
+            "PayloadUUID": intermediate_uuid,
+            "PayloadDisplayName": "Blackridge Intermediate CA",
+            "PayloadDescription": "Intermediate certificate for Blackridge Wi-Fi identities.",
+            "PayloadContent": intermediate_ca_bytes,
+        }
+        payloads.append(intermediate_payload)
 
     identity_payload = {
         "PayloadType": "com.apple.security.pkcs12",
@@ -52,7 +68,7 @@ def build_profile(
         "PayloadVersion": 1,
         "PayloadIdentifier": f"net.shumie.blackridge.wifi.{device_name}",
         "PayloadUUID": wifi_uuid,
-        "PayloadDisplayName": "Blackridge Secure Wi-Fi",
+        "PayloadDisplayName": "ShuMK Secure Wi-Fi",
         "PayloadDescription": f"Managed Wi-Fi configuration for {ssid}.",
         "AutoJoin": True,
         "EncryptionType": "WPA",
@@ -67,17 +83,19 @@ def build_profile(
         },
     }
 
+    payloads.extend([identity_payload, wifi_payload])
+
     profile = {
         "PayloadType": "Configuration",
         "PayloadVersion": 1,
         "PayloadIdentifier": f"net.shumie.blackridge.profile.{device_name}",
         "PayloadUUID": profile_uuid,
         "PayloadDisplayName": profile_display_name,
-        "PayloadDescription": "Blackridge WPA3-Enterprise EAP-TLS Wi-Fi profile.",
-        "PayloadOrganization": "Blackridge",
+        "PayloadDescription": "ShuMK WPA3-Enterprise EAP-TLS Wi-Fi profile.",
+        "PayloadOrganization": "ShuMK",
         "PayloadRemovalDisallowed": False,
         "PayloadScope": "System",
-        "PayloadContent": [root_payload, identity_payload, wifi_payload],
+        "PayloadContent": payloads,
     }
     return profile
 
@@ -88,8 +106,9 @@ def main():
     parser.add_argument("--device-name", required=True)
     parser.add_argument("--username", required=True)
     parser.add_argument("--radius-host", required=True)
-    parser.add_argument("--profile-display-name", default="Blackridge Secure Wi-Fi")
+    parser.add_argument("--profile-display-name", default="ShuMK Secure Wi-Fi")
     parser.add_argument("--root-ca", required=True, type=Path)
+    parser.add_argument("--intermediate-ca", type=Path)
     parser.add_argument("--pkcs12", required=True, type=Path)
     parser.add_argument("--pkcs12-password", required=True)
     parser.add_argument("--output", required=True, type=Path)
@@ -102,6 +121,7 @@ def main():
         radius_host=args.radius_host,
         profile_display_name=args.profile_display_name,
         root_ca_bytes=args.root_ca.read_bytes(),
+        intermediate_ca_bytes=args.intermediate_ca.read_bytes() if args.intermediate_ca else None,
         pkcs12_bytes=args.pkcs12.read_bytes(),
         pkcs12_password=args.pkcs12_password,
     )

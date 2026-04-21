@@ -10,9 +10,18 @@
 - Home Assistant currently runs with `network_mode: host` and `privileged: true`.
 - `ufw` is active on the host, with additional Docker-subnet allowances required for nginx-to-host proxying and Docker-build DNS.
 - The recovery-critical backup baseline is AdGuard, nginx reverse proxy, Home Assistant, and Mosquitto.
+- The authoritative Blackridge DNS map is:
+  - `blackcomb.blackridge.shumie.net` -> `192.168.10.30`
+  - `rainier.blackridge.shumie.net` -> `192.168.10.10`
+  - `dns.blackridge.shumie.net` -> `192.168.10.10`
+  - `ha.blackridge.shumie.net` -> `192.168.10.10`
+  - `dsm.blackridge.shumie.net` -> `192.168.10.10`
+  - `nas.blackridge.shumie.net` -> `192.168.10.20`
+  - `printer.blackridge.shumie.net` -> `192.168.10.10`
 - `dsm.blackridge.shumie.net` must resolve to `192.168.10.10` so clients reach nginx and receive the Rainier-managed Let's Encrypt certificate, while `nas.blackridge.shumie.net` should resolve directly to `192.168.10.20` for SMB and NAS access.
 - Planned Wi-Fi direction is `WPA3-Enterprise` with `EAP-TLS`, using FreeRADIUS on `rainier` plus an internal CA for Apple device certificates.
 - Step CA is the chosen CA service for the first internal PKI implementation on `rainier`.
+- The live Step CA container currently has both bind-mounted state paths under `/home/shumie/step-ca` and an additional anonymous Docker volume mounted at `/home/step`.
 
 ## Ongoing risks to remember
 
@@ -21,6 +30,7 @@
 - No backup target or automated backup job was confirmed during inspection.
 - `scripts/sync-from-live.sh` assumes direct readability of live files; that is already false for parts of the current host.
 - AdGuard rewrites can silently bypass nginx if service hostnames are pointed directly at backend devices.
+- The Step CA anonymous Docker volume should be reviewed so recovery assumptions are not based on bind mounts alone if the image writes outside the expected subpaths.
 
 ## Preferred direction
 

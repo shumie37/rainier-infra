@@ -1,7 +1,7 @@
 services:
   homeassistant:
     container_name: homeassistant
-    image: ghcr.io/home-assistant/home-assistant@sha256:c36741490472518338323db8ee67775d7df70d2fa1f68eff9b9e63679fe64a18
+    image: ghcr.io/home-assistant/home-assistant:stable
     restart: unless-stopped
     network_mode: host
     privileged: true

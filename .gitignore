@@ -2,6 +2,8 @@
 .env.*
 !.env.example
 
+.DS_Store
+
 secrets*
 *.key
 *.pem
@@ -31,6 +33,6 @@ homeassistant/config/.HA_VERSION
 homeassistant/config/nest/
 mosquitto/config/passwords
 adguard/work/
+compose/nginx-proxy/auth/*.htpasswd
 portainer/
 adguard/conf/AdGuardHome.yaml
-compose/nginx-proxy/auth/*.htpasswd

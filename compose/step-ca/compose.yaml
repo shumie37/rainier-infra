@@ -1,9 +1,8 @@
 services:
   step-ca:
-    image: smallstep/step-ca@sha256:a2b17872915c193259b75a5474c398326f41bd199f0842093e52cf4182bc8270
+    image: smallstep/step-ca:latest
     container_name: step-ca
     restart: unless-stopped
-    init: true
     ports:
       - "9000:9000"
     healthcheck:

@@ -11,10 +11,10 @@ Purpose:
 Services currently covered:
 - AdGuard Home
 - nginx reverse proxy
-- FreeRADIUS (planned)
+- FreeRADIUS
 - Home Assistant
 - Mosquitto
-- Step CA (planned)
+- Step CA
 
 Not currently tracked:
 - Docker runtime state

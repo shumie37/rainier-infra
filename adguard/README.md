@@ -13,4 +13,4 @@ Live paths:
 
 Notes:
 - AdGuardHome.yaml is intentionally excluded from Git because it contains authentication material.
-- Review DNS rewrite for claw.blackridge.shumie.net, current value appears typoed as 192.1.68.3.11 and likely should be 192.168.3.11.
+- Review DNS rewrite for `claw.blackridge.shumie.net` against the current authoritative DNS map before relying on it. The older note about `192.1.68.3.11` / `192.168.3.11` is stale and should not be used as current guidance.

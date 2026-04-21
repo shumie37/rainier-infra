@@ -29,6 +29,12 @@ Recommended architecture:
   - the device client certificate
   - auto-join enabled
 
+Preferred Apple install model:
+
+- use one managed `.mobileconfig` as the primary install path
+- avoid mixing profile-managed trust with ad hoc manual keychain imports unless recovering from a failed install
+- after recovery testing, remove duplicate manual `login` keychain CA copies so the managed `System` trust chain is the only active copy
+
 ## Trust model
 
 ### Why an internal CA is required
@@ -145,7 +151,7 @@ Preferred deployment order:
 
 Recommended first rollout:
 
-- create a separate test SSID such as `lab-secure`
+- create a separate test SSID such as `ShuMK-secure`
 - security mode: `WPA3-Enterprise`
 - authentication backend: FreeRADIUS on `rainier`
 
@@ -209,9 +215,24 @@ As of the first live bootstrap on `rainier`:
 Current hardening targets:
 
 - `default_eap_type = tls`
-- `tls_min_version = "1.3"`
+- `tls_min_version = "1.2"`
 - `tls_max_version = "1.3"`
 - `require_message_authenticator = yes` for the UniFi RADIUS client definition
+
+Compatibility note:
+
+- `TLS 1.3` remains the preferred upper bound
+- the live Apple and UniFi path rejected a `TLS 1.3`-only policy with `fatal:protocol version`
+- the current `1.2` minimum and `1.3` maximum policy keeps the deployment modern while preserving working interoperability
+
+## Apple profile hygiene
+
+For the best day-two experience:
+
+- prefer the generated `.mobileconfig` over piecemeal manual imports
+- expect the profile-managed CA and identity payloads to land in the `System` keychain
+- do not keep duplicate `login` and `System` copies of the same `Blackridge` CA certificates unless actively debugging
+- if manual recovery imports are needed, clean them back out after the profile path is confirmed working
 
 Deferred until a fuller PKI lifecycle exists:
 

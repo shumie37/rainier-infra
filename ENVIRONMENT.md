@@ -8,9 +8,22 @@
 - Observed primary LAN IP: `192.168.10.10`
 - Hardware from `hostnamectl`: ZOTAC `ZBOX-CI323NANO`
 
+## Authoritative DNS map
+
+Current source-of-truth DNS records for the Blackridge environment:
+
+- `blackcomb.blackridge.shumie.net` -> `192.168.10.30`
+- `rainier.blackridge.shumie.net` -> `192.168.10.10`
+- `dns.blackridge.shumie.net` -> `192.168.10.10`
+- `ha.blackridge.shumie.net` -> `192.168.10.10`
+- `dsm.blackridge.shumie.net` -> `192.168.10.10`
+- `nas.blackridge.shumie.net` -> `192.168.10.20`
+- `printer.blackridge.shumie.net` -> `192.168.10.10`
+
 ## OS and runtime
 
 - OS: Ubuntu 24.04.4 LTS
+- Kernel: `6.8.0-110-generic`
 - Architecture: `x86_64`
 - Git-backed durable repo: `/home/shumie/projects/rainier-infra`
 
@@ -40,9 +53,12 @@ Observed listeners and published services include:
 - `53/tcp` and `53/udp` DNS
 - `80/tcp` HTTP
 - `443/tcp` HTTPS
+- `1812/udp` and `1813/udp` FreeRADIUS
 - `8123/tcp` Home Assistant
 - `1883/tcp` MQTT
 - `3000/tcp` AdGuard web UI
+- `21064/tcp` Home Assistant companion service
+- `18555/tcp` go2rtc helper listener
 - `9000/tcp` Step CA
 
 Docker-confirmed published ports:
@@ -74,6 +90,7 @@ Observed Docker volumes:
 - `nginx-proxy_letsencrypt`
 - `nginx-proxy_certbot-work`
 - `nginx-proxy_certbot-log`
+- anonymous Step CA volume mounted at `/home/step`
 
 Observed Docker networks:
 

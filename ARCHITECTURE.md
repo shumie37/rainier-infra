@@ -11,6 +11,18 @@
 - Hostname: `rainier`
 - Core host services observed: `ssh`, `docker`, `containerd`, `systemd-networkd`, `systemd-resolved`, `rsyslog`, `cron`, `unattended-upgrades`
 
+### Authoritative DNS map
+
+Current source-of-truth DNS records for the Blackridge environment:
+
+- `blackcomb.blackridge.shumie.net` -> `192.168.10.30`
+- `rainier.blackridge.shumie.net` -> `192.168.10.10`
+- `dns.blackridge.shumie.net` -> `192.168.10.10`
+- `ha.blackridge.shumie.net` -> `192.168.10.10`
+- `dsm.blackridge.shumie.net` -> `192.168.10.10`
+- `nas.blackridge.shumie.net` -> `192.168.10.20`
+- `printer.blackridge.shumie.net` -> `192.168.10.10`
+
 ### Deploy configuration
 
 Canonical Git-backed repo:
@@ -60,7 +72,7 @@ Secret-bearing locations observed or documented:
 
 - Live compose path: `/home/shumie/adguard/docker-compose.yml`
 - Runtime mode: host networking
-- Tracked compose copy: `compose/adguard/docker-compose.yml`
+- Tracked compose copy verified in this repo: `compose/adguard/docker-compose.yml`
 
 ### nginx reverse proxy
 

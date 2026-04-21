@@ -6,7 +6,7 @@ This document captures the exact first-pass UniFi configuration needed to point 
 
 ## Backend target
 
-- RADIUS server: `192.168.3.10`
+- RADIUS server: `192.168.10.10`
 - Authentication port: `1812`
 - Accounting port: `1813`
 - Shared secret source: `/home/shumie/freeradius/.env.radius`
@@ -19,10 +19,10 @@ Recommended first-pass test network:
 
 - SSID: `lab-secure`
 - Security protocol: `WPA3-Enterprise`
-- Authentication server: `192.168.3.10`
+- Authentication server: `192.168.10.10`
 - Authentication port: `1812`
 - Accounting enabled: optional
-- Accounting server: `192.168.3.10`
+- Accounting server: `192.168.10.10`
 - Accounting port: `1813`
 - Shared secret: value from `/home/shumie/freeradius/.env.radius`
 
@@ -32,7 +32,7 @@ Recommended first-pass test network:
 - FreeRADIUS is configured for `EAP-TLS`, so no username/password inner method is required.
 - The RADIUS server certificate currently uses:
   - common name: `radius.blackridge.shumie.net`
-  - SANs: `radius.blackridge.shumie.net`, `192.168.3.10`
+  - SANs: `radius.blackridge.shumie.net`, `192.168.10.10`
 
 ## Apple profile expectations
 

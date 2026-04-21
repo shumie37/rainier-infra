@@ -6,7 +6,7 @@ This document records the migration of `rainier` ingress from Caddy to nginx and
 
 ## Current live ingress inventory
 
-Validated live on `rainier` on 2026-04-19:
+Validated live on `rainier` on 2026-04-20:
 
 - runtime: Docker container `nginx-proxy`
 - live compose: `/home/shumie/projects/rainier-infra/compose/nginx-proxy/compose.yaml`
@@ -17,15 +17,19 @@ Validated live on `rainier` on 2026-04-19:
 
 Current live hostname map:
 
-- `ha.blackridge.shumie.net` -> `host.docker.internal:8123`
-- `dns.blackridge.shumie.net` -> `192.168.10.10:3000`
-- `dsm.blackridge.shumie.net` -> `https://192.168.10.20:5001` with upstream TLS verification disabled
-- `printer.blackridge.shumie.net` -> `https://192.168.40.10:443` with upstream TLS verification disabled and HTTP/1.1 forced
+- `rainier.blackridge.shumie.net` -> `192.168.10.10`
+- `blackcomb.blackridge.shumie.net` -> `192.168.10.30`
+- `ha.blackridge.shumie.net` -> `192.168.10.10`, proxied to `host.docker.internal:8123`
+- `dns.blackridge.shumie.net` -> `192.168.10.10`, proxied to `192.168.10.10:3000`
+- `dsm.blackridge.shumie.net` -> `192.168.10.10`, proxied to `https://192.168.10.20:5001` with upstream TLS verification disabled
+- `nas.blackridge.shumie.net` -> `192.168.10.20` directly
+- `printer.blackridge.shumie.net` -> `192.168.10.10`, proxied to `https://192.168.40.10:443` with upstream TLS verification disabled and HTTP/1.1 forced
 
 ## Important operational notes
 
 - `dsm.blackridge.shumie.net` must resolve to `192.168.10.10` for clients to use the nginx-managed Let's Encrypt certificate. If local DNS points `dsm.blackridge.shumie.net` directly to `192.168.10.20`, clients bypass nginx and see the NAS certificate instead.
 - `nas.blackridge.shumie.net` should resolve directly to `192.168.10.20` for SMB and direct NAS access rather than the reverse proxy.
+- `rainier.blackridge.shumie.net`, `dns.blackridge.shumie.net`, `ha.blackridge.shumie.net`, and `printer.blackridge.shumie.net` all resolve to `192.168.10.10` in the current authoritative DNS map.
 - `printer.blackridge.shumie.net` uses a constrained upstream TLS policy and a local fallback for the missing `TheatreHome` bundle.
 - The tracked nginx template and generated config should be kept aligned when ingress changes are made.
 

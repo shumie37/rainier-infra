@@ -25,4 +25,5 @@ Notes:
 
 - The current bootstrap uses a single on-host Step CA instance for both root and issuing material.
 - The preferred long-term model is still an offline root with a separate online issuing CA.
+- The live compose adds an explicit healthcheck against `/health` because the image default probe does not fit this hostname layout.
 - Keep all Step CA private keys and password files out of Git.
