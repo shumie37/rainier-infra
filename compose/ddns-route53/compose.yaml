@@ -1,0 +1,21 @@
+services:
+  ddns-route53:
+    image: crazymax/ddns-route53:2.15.0
+    container_name: ddns-route53
+    restart: unless-stopped
+    env_file:
+      - ../nginx-proxy/.env.nginx-proxy
+    environment:
+      TZ: America/Denver
+      SCHEDULE: "*/5 * * * *"
+      LOG_LEVEL: info
+      LOG_JSON: "false"
+      DDNSR53_ROUTE53_HOSTEDZONEID: Z1XIAIXXJ9KA3O
+      DDNSR53_ROUTE53_RECORDSSET_0_NAME: vpn.blackridge.shumie.net.
+      DDNSR53_ROUTE53_RECORDSSET_0_TYPE: A
+      DDNSR53_ROUTE53_RECORDSSET_0_TTL: "60"
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp
